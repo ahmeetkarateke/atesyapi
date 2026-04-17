@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { getContactContent } from '@/lib/siteContent'
 import ContactForm from './ContactForm'
 
