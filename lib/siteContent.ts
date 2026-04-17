@@ -1,6 +1,15 @@
 import { doc, getDoc } from 'firebase/firestore'
 import { db } from './firebase'
 
+function withTimeout<T>(promise: Promise<T>, ms = 5000): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('Firebase timeout')), ms)
+    ),
+  ])
+}
+
 export interface HomepageContent {
   heroTitle: string
   heroSubtitle: string
@@ -160,7 +169,7 @@ const defaultContact: ContactContent = {
 
 export async function getHomepageContent(): Promise<HomepageContent> {
   try {
-    const snap = await getDoc(doc(db, 'site_content', 'homepage'))
+    const snap = await withTimeout(getDoc(doc(db, 'site_content', 'homepage')))
     if (!snap.exists()) return defaultHomepage
     const data = snap.data()
     return {
@@ -186,7 +195,7 @@ export async function getHomepageContent(): Promise<HomepageContent> {
 
 export async function getAboutContent(): Promise<AboutContent> {
   try {
-    const snap = await getDoc(doc(db, 'site_content', 'about'))
+    const snap = await withTimeout(getDoc(doc(db, 'site_content', 'about')))
     if (!snap.exists()) return defaultAbout
     const data = snap.data()
     return {
@@ -212,7 +221,7 @@ export async function getAboutContent(): Promise<AboutContent> {
 
 export async function getServicesContent(): Promise<ServicesContent> {
   try {
-    const snap = await getDoc(doc(db, 'site_content', 'services'))
+    const snap = await withTimeout(getDoc(doc(db, 'site_content', 'services')))
     if (!snap.exists()) return defaultServices
     const data = snap.data()
     return {
@@ -227,7 +236,7 @@ export async function getServicesContent(): Promise<ServicesContent> {
 
 export async function getContactContent(): Promise<ContactContent> {
   try {
-    const snap = await getDoc(doc(db, 'site_content', 'contact'))
+    const snap = await withTimeout(getDoc(doc(db, 'site_content', 'contact')))
     if (!snap.exists()) return defaultContact
     const data = snap.data()
     return {
