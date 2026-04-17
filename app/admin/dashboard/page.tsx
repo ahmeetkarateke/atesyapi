@@ -82,11 +82,16 @@ export default function DashboardPage() {
           >
             İçerik Yönetimi
           </Link>
-          {unreadCount > 0 && (
-            <span className="bg-yellow-400 text-gray-900 text-xs font-bold px-2.5 py-1 rounded-full">
-              {unreadCount} okunmamış mesaj
-            </span>
-          )}
+          <Link
+            href="/admin/mesajlar"
+            className={`text-xs font-bold px-2.5 py-1 rounded-full transition-colors duration-200 ${
+              unreadCount > 0
+                ? 'bg-yellow-400 text-gray-900 hover:bg-yellow-300'
+                : 'bg-gray-700 text-white hover:bg-gray-600'
+            }`}
+          >
+            {unreadCount > 0 ? `${unreadCount} okunmamış mesaj` : 'Mesajlar'}
+          </Link>
         </div>
         <button
           onClick={handleSignOut}
