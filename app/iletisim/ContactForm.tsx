@@ -26,13 +26,17 @@ export default function ContactForm({ address, phone, email }: Props) {
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    if (formData.adSoyad.length > 100 || formData.email.length > 200 || formData.telefon.length > 20 || formData.mesaj.length > 2000) {
+      alert('Lütfen daha kısa bilgiler girin.')
+      return
+    }
     setSending(true)
     try {
       await addDoc(collection(db, 'messages'), {
-        name: formData.adSoyad,
-        email: formData.email,
-        phone: formData.telefon,
-        message: formData.mesaj,
+        name: formData.adSoyad.trim().slice(0, 100),
+        email: formData.email.trim().slice(0, 200),
+        phone: formData.telefon.trim().slice(0, 20),
+        message: formData.mesaj.trim().slice(0, 2000),
         sentAt: serverTimestamp(),
         read: false,
       })
