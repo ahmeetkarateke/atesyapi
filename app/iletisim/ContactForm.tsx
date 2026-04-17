@@ -19,18 +19,21 @@ export default function ContactForm({ address, phone, email }: Props) {
     mesaj: '',
   })
   const [sending, setSending] = useState(false)
+  const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle')
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
+    if (status !== 'idle') setStatus('idle')
   }
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
     if (formData.adSoyad.length > 100 || formData.email.length > 200 || formData.telefon.length > 20 || formData.mesaj.length > 2000) {
-      alert('Lütfen daha kısa bilgiler girin.')
+      setStatus('error')
       return
     }
     setSending(true)
+    setStatus('idle')
     try {
       await addDoc(collection(db, 'messages'), {
         name: formData.adSoyad.trim().slice(0, 100),
@@ -41,9 +44,9 @@ export default function ContactForm({ address, phone, email }: Props) {
         read: false,
       })
       setFormData({ adSoyad: '', email: '', telefon: '', mesaj: '' })
-      alert('Mesajınız gönderildi! En kısa sürede size dönüş yapacağız.')
+      setStatus('success')
     } catch {
-      alert('Mesaj gönderilemedi. Lütfen tekrar deneyin.')
+      setStatus('error')
     } finally {
       setSending(false)
     }
@@ -115,6 +118,16 @@ export default function ContactForm({ address, phone, email }: Props) {
               className="w-full px-4 py-3 rounded-lg border border-gray-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#FBBF24] focus:border-transparent transition text-sm resize-none"
             />
           </div>
+          {status === 'success' && (
+            <div className="px-4 py-3 rounded-lg bg-green-50 border border-green-200 text-green-700 text-sm">
+              Mesajınız gönderildi! En kısa sürede size dönüş yapacağız.
+            </div>
+          )}
+          {status === 'error' && (
+            <div className="px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
+              Mesaj gönderilemedi. Lütfen bilgilerinizi kontrol edip tekrar deneyin.
+            </div>
+          )}
           <button
             type="submit"
             disabled={sending}
